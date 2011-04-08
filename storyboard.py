@@ -1,6 +1,7 @@
 import pygtk
 pygtk.require('2.0')
 import gtk
+import serial
 
 class StoryBoard:
 	def file_dialog(self, widget, file_name_entry):
@@ -39,12 +40,15 @@ class StoryBoard:
         	entry.set_visibility(checkbutton.get_active())
 	
 	# add in one parameter for function
-	def ok_button_callback(self, widget, file_name_entry):
+	def ok_button_callback(self, widget, file_name_entry, port_name_entry):
 		file_name = file_name_entry.get_text()
+		port_name = port_name_entry.get_text()
 		file = open(file_name, 'r')
 		for line in file:
 			print line.rstrip()
 		file.closed
+		comm = serial.Serial(port_name, 9600)
+
 		# serial connection at here
 
 
@@ -87,10 +91,10 @@ class StoryBoard:
 		hbox.pack_start(port_label, False, False, 5)
 		port_label.show()
 
-        	entry = gtk.Entry()
-        	entry.set_max_length(50)
-        	entry.connect("activate", self.enter_callback, entry)
-        	port_name = entry.get_text()
+        	port_name_entry = gtk.Entry()
+        	port_name_entry.set_max_length(50)
+        	port_name_entry.connect("activate", self.enter_callback, port_name_entry)
+        	#port_name = port_name_entry.get_text()
         	hbox.pack_start(entry, False, False, 0)
 	        entry.show()
 
@@ -127,7 +131,7 @@ class StoryBoard:
         
 		# Buttons
         	ok_button = gtk.Button(stock=gtk.STOCK_OK)
-		ok_button.connect("clicked", self.ok_button_callback, file_name_entry)
+		ok_button.connect("clicked", self.ok_button_callback, file_name_entry, port_name_entry)
         	hbox3.pack_start(ok_button, False, False, 0)
         	ok_button.show()
                                    
