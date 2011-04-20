@@ -1,7 +1,8 @@
 import pygtk
 pygtk.require('2.0')
 import gtk
-#import serial
+import serial
+import time
 
 class StoryBoard:
 	def file_dialog(self, widget, file_name_entry):
@@ -51,9 +52,10 @@ class StoryBoard:
 			packet += line.rstrip() + ':'
 		file.closed
 		print "packet: %s" % packet
-		#comm = serial.Serial(port_name, 9600)
-		#comm.write(packet)
-
+		comm = serial.Serial(port_name, 9600)
+		comm.write(packet)
+		comm.write('~')
+		comm.close()
 		# serial connection at here
 
 
