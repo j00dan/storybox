@@ -1,3 +1,4 @@
+
  #include <Wire.h> //I2C library
 
 
@@ -47,15 +48,16 @@
   }
 
 
-
   /* Code started here */
   /* NOTICE: Shall NULL eeprom before write data in */
   
   char words[] = "";
+  char one_char;
   char* words_list[] = {};
   int i = 0, j = 0, k = 0;
   char temp[] = "";
-    
+  boolean last_char = false;
+ 
   void setup() 
   {
     Wire.begin(); // initialise the connection
@@ -65,23 +67,31 @@
   void loop() 
   {
     if(Serial.available() > 0){
-      words[i] = Serial.read();
+      one_char = Serial.read();
+      i2c_eeprom_write_byte(0x50, i, (byte)one_char);
+      //words[i] = one_char;
       Serial.println("word: ");
-      Serial.println(words[i]); 
-      if(words[i] == '~'){
-        i2c_eeprom_write_page(0x50, 0, (byte *)words, sizeof(words)); //write into eeprom
-        int addr = 0;
-        byte b = i2c_eeprom_read_byte(0x50, 0); //access the first address of memory
-        while (b!=0){
-          store_words_list((char)b);
-          addr++;
-          b = i2c_eeprom_read_byte(0x50, addr);
-        }
-      }
+      Serial.println(one_char);
+      
+      if(one_char == '~')
+        last_char = true;
       i++;
     }
-    delay(2000);
-  }
+    if(last_char){
+      int addr = 0;
+      byte b = i2c_eeprom_read_byte(0x50, 0); //access the first address of memory
+      Serial.println("Reading eeprom now");
+      while (b!=0){
+        //store_words_list((char)b);
+        Serial.print("char: ");
+        Serial.println((char) b);
+        addr++;
+        b = i2c_eeprom_read_byte(0x50, addr);
+      } 
+      last_char = false;
+      i = 0;
+    }
+ }
   
   void store_words_list(char c){
     if(c == '_' || c == '~'){
